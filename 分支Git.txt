@@ -1,0 +1,262 @@
+cd /usr/local/test/git-test
+
+# 拉取项目
+git clone https://github.com/anyexiuming/branch-test.git
+echo '0.0.1-SNAPSHOT' >pom.xml
+git add .
+git commit -am 'xx'
+git pull
+git push 
+
+# 查看当前分支
+$ git branch
+* main
+新建dev分支并切换
+（单纯新建分支git branch dev/v1.0.0）
+（单纯切换分支git checkout dev/v1.0.0）
+$ git checkout -b dev/v1.0.0
+$ echo '用户模块 100%' >user.file
+$ echo '视频模块 100%' >moive.file
+vim pom.xml  1.0.0-SNAPSHOT
+$ git add .
+$ git commit -m '用户和视频模块开发完成'
+vim pom.xml  1.0.0-SNAPSHOT
+$ git add .
+$ git commit -m '1.0.0'
+推到远端
+$ git push origin dev/v1.0.0
+  git push --set-upstream origin dev/v1.0.0
+  
+新建release分支  
+$ git checkout -b release/v1.0.0
+vim pom.xml 1.0.0
+git add .
+$ git commit -am 'v1.0.0线上配置'
+
+打tag 、是一个特殊的分支
+$ git tag -a 'release_v1.0.0' -m '第一个版本'
+$ git tag
+release_v1.0.0
+上线tag
+git push origin release_v1.0.0
+
+删除release分支
+git checkout main 先到其他分支上去才能删除
+git branch -d release/v1.0.0
+{error: The branch 'release/v1.0.0' is not fully merged.
+If you are sure you want to delete it, run 'git branch -D release/v1.0.0'.}
+
+确定删除
+$ git branch -D release/v1.0.0
+{Deleted branch release/v1.0.0 (was 51c97cf).}
+
+
+合并dev分支到master,暂时不push
+git merge dev/v1.0.0
+
+第一个版本结束了
+==========================
+弹幕功能 30% v1.1.0
+
+git status
+git pull 
+git  checkout -b dev/v1.1.0
+git branch 
+$ echo '弹幕功能30%' > danmu.file
+git add .
+git commit -m '弹幕功能30%'
+==============================
+此时线上功能遇到bug,紧急修复
+切换分支 dev/v1.0.0
+git checkout dev/v1.0.0
+$ vim pom.xml  1.0.1-SNAPSHOT
+$ echo 'bug修复完成' > bug1-fix
+git add .
+git commit -m 'bug 修复完成'
+git push --set-upstream origin dev/v1.0.0
+
+新建线上修复分支release/v1.0.1
+git checkout -b release/v1.0.1
+$ git commit -m '线上配置'
+
+$ git tag -a release_1.0.1 -m 'bug fix'
+$ git push origin release_1.0.1
+tag打包错误，删除
+$ git tag -d release_1.0.1
+$ git push origin :release_1.0.1
+
+重新打包tag
+$ git tag -a release_v1.0.1 -m 'bug fix'
+$ git push origin release_v1.0.1
+
+切换回开发分支main
+$ git checkout main
+合并dev/v1.0.0
+git merge dev/v1.0.0
+推到远端
+git push
+
+删除release/v1.0.1
+git branch -D release/v1.0.1
+修复完后
+=======================================
+继续弹幕功能
+git checkout dev/v1.1.0
+vim pom.xml 1.1.0-SNAPSHOT
+vim danmu.file 弹幕功能100%
+git add .
+git commit -m '弹幕功能完成'
+git push --set-upstream origin dev/v1.1.0
+============================
+打包上线v1.1.0
+$ git checkout -b release/v1.1.0
+git add .
+git commit -m '版本号v1.1.0'
+(两部合并:git commit -am 'xx')
+打包
+git tag -a release_v1.1.0 -m '弹幕功能'
+git push origin release_v1.1.0
+
+切换到main
+git checkout main
+合并dev/v1.1.0
+$ git merge dev/v1.1.0
+
+出现冲突
+CONFLICT (content): Merge conflict in pom.xml
+
+vim pom.xml  1.1.0-SNAPSHOT
+git commit -am '解决冲突'
+
+git push 
+删除本地分支release/v1.1.0
+$ git branch -D release/v1.1.0
+
+
+
+
+========================================
+
+第二版本的开发
+查看当前分支
+git branch 
+      dev/v1.0.0
+      dev/v1.1.0
+      * main
+从main上拉取第二版本的主分支      
+$ git checkout -b dev/v2.0.0
+ 修改版本号
+ vim pom.xml  2.0.0-SNAPSHOT
+
+在dev/v2.0.0下，在新建会员模块的分支
+$ git checkout -b feature/v2.0.0_vip
+
+切回dev
+git checkout dev/v2.0.0
+在dev/v2.0.0下，新建搜索模块的分支
+$ git checkout -b feature/v2.0.0_search
+
+直接在feature/v2.0.0_search下新建分支
+$ git branch  feature/v2.0.0_search1
+$ git branch feature/v2.0.0_search2
+
+=====================================
+当前分支情况
+$ git branch
+  dev/v1.0.0
+  dev/v1.1.0
+  dev/v2.0.0
+* feature/v2.0.0_search
+  feature/v2.0.0_search1
+  feature/v2.0.0_search2
+  feature/v2.0.0_vip
+  main
+  
+合并完删除  
+
+=================================
+切到search1
+git checkout  feature/v2.0.0_search1
+vim  search.file 
+git add .
+git commit -m 'search1的任务完后了'
+
+切到search2
+git checkout  feature/v2.0.0_search2
+vim search.file
+git add .
+git commit -m 'search2的任务完后了'
+
+切到search 
+git checkout  feature/v2.0.0_search2
+git merge feature/v2.0.0_search1
+git merge feature/v2.0.0_search2
+解决冲突问题
+git add .
+git commit -m '两个两组的serch都完成了'
+
+切到 dev/v2.0.0
+git checkout dev/v2.0.0
+git merge feature/v2.0.0_search
+git add .
+git commit -m '完成搜索引擎'
+
+
+切到vip
+git checkout feature/v2.0.0_vip
+vim vip.file
+git add .
+git commit -m '完成会员功能'
+
+切到 dev/v2.0.0
+git checkout dev/v2.0.0
+git merge feature/v2.0.0_vip
+git add .
+git commit -m '完成会员功能'
+
+dev/v2.0.0推到远端
+git push --set-upstream origin dev/v2.0.0
+
+=================================
+切到 dev/v2.0.0
+git checkout dev/v2.0.0
+
+新建release分支
+git checkout -b release/v2.0.0
+
+git add .
+git commit -m '版本号v2.0.0'
+打包
+git tag -a release_v2.0.0 -m '搜索+会员'
+上线
+git push origin release_v2.0.0
+================================
+
+切到main 上线最新功能
+git checkout main
+合并dev/v2.0.0
+git merge dev/v2.0.0
+git add .
+git commit -m '上线2.0.0'
+git push 
+
+删除本地分支release/v2.0.0
+$ git branch -D release/v2.0.0
+
+$ git branch
+  dev/v1.0.0
+  dev/v1.1.0
+  dev/v2.0.0
+  feature/v2.0.0_search
+  feature/v2.0.0_search1
+  feature/v2.0.0_search2
+  feature/v2.0.0_vip
+* main
+
+
+
+
+
+
+  
+
