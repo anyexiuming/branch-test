@@ -1,5 +1,3 @@
-cd /usr/local/test/git-test
-
 # 拉取项目
 git clone https://github.com/anyexiuming/branch-test.git
 echo '0.0.1-SNAPSHOT' >pom.xml
